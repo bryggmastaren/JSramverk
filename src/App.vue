@@ -68,7 +68,7 @@ const data = await response.json()
         this.imageUrl = data.url || this.defaultImageUrl; // Hämta hdurl eller fallback bilden
         this.explanation = data.explanation || "No explanation available.";
         this.copyright = data.copyright || "No copyright information.";
-      
+       
     }
      catch(error) { 
       console.error("Fetch error:", error);
@@ -84,7 +84,7 @@ updateBtn() {
 .apod-image {
   max-width: 100%; 
   height: auto;      /* behåller bildens proportioner */
-  border-radius: 8px; /* runda hörn */
-  margin: 20px 0;    /* avstånd höger vänster */
+  border-radius: 8px; /* Runda hörn */
+  margin: 20px 0;    /* Avstånd höger vänster */
 }
 </style>
