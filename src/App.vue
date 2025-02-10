@@ -1,7 +1,17 @@
 <template>
   <div>
+    <form>
+      <!-- v-modeln binder input-fältet till selectedDate. när användaren väljer datum uppdateras det automatiskt 
+       @click="updateBtn()" när button klickas på körs metoden updateBtn()-->
+
+      <input type="date" id="dateInput" v-model="selectedDate" placeholder="Pick a date" aria-label="Enter a date ">
+      <button class="button" type="button" @click="updateBtn()"> Update </button>
+    </form>
+    <!-- Titel och datum visas här -->
     <h1>{{ title }}</h1>
-    <!-- Bilden visas här -->
+    <p> {{ selectedDate }}</p>
+
+    <!-- Bilden/videon visas här. v-bind används genom ":" innan "src" -->
     <div v-if="isVideo">
   <video :src="imageUrl" controls alt="astro video"></video>
 </div>
@@ -10,7 +20,19 @@
 </div>
 
     <p id="explan">{{ explanation }}</p>
-    <p v-if="copyright">Copyright: {{ copyright }}</p>
+    <!-- -->
+    <p id="copyright"> Copyright: {{ copyright }}</p>
+
+    <!-- kan även skrivas såhär
+    vue
+Copy
+<p>Copyright: {{ copyright || "No copyright information." }}</p>
+och i fetchAPOD():
+
+javascript
+Copy
+this.copyright = data.copyright; // Ta bort fallback-strängen här-->
+
   </div>
 </template>
 
@@ -18,35 +40,44 @@
 export default {
   data() {
     return {
+      selectedDate: new Date().toISOString().split('T')[0],
+      date: "",
       title: "",
       imageUrl: "",
       explanation: "",
       copyright: "",
-        isVideo: false, // För att kontrollera om det är en video
+      isVideo: false, // För att kontrollera om det är en video
       defaultImageUrl: "media/favicon(1).ico", // Fallbackbild om ingen bild hämtas
     };
   },
- mounted() {
-  fetch(
-    "https://api.nasa.gov/planetary/apod?api_key=bLKsuQaFpHG3mK8eo9UwyCI1RXpF9CKf8DqVYmiW&start_date=2025-02-10"
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      // hämta 0e datan ur arrayn
-      const firstImage = data[0];
-console.log(data[0])
-      // Kontrollera om data finns
-      if (firstImage) {
-        this.isVideo = firstImage.media_type === "video";
-        this.title = firstImage.title || "No Title"; // titel, annars "no title"
-        this.imageUrl = firstImage.url || this.defaultImageUrl; // Hämta hdurl eller fallback bilden
-        this.explanation = firstImage.explanation || "No explanation available.";
-        this.copyright = firstImage.copyright || "No copyright information.";
-      }
-    })
-    .catch((error) => console.error("Fetch error:", error));
-}
-};
+ mounted() { 
+  this.fetchAPOD()
+},
+methods:{
+  async fetchAPOD(){
+  const apiKey = "bLKsuQaFpHG3mK8eo9UwyCI1RXpF9CKf8DqVYmiW";
+  const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${this.selectedDate}`;
+
+  try {
+  const response = await fetch(url)
+const data = await response.json()
+
+        this.date = data.date === "No date";
+        this.isVideo = data.media_type === "video";
+        this.title = data.title || "No Title"; // titel, annars "no title"
+        this.imageUrl = data.url || this.defaultImageUrl; // Hämta hdurl eller fallback bilden
+        this.explanation = data.explanation || "No explanation available.";
+        this.copyright = data.copyright || "No copyright information.";
+      
+    }
+     catch(error) { 
+      console.error("Fetch error:", error);
+  }
+},
+updateBtn() {
+  this.fetchAPOD();
+}}};
+
 </script>
 <style scoped>
 /* APOD bilden */
