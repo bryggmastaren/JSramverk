@@ -2,14 +2,14 @@
   <div>
     <form>
       <!-- v-modeln binder input-fältet till selectedDate. när användaren väljer datum uppdateras det automatiskt 
-       @click="updateBtn()" när button klickas på körs metoden updateBtn()-->
+       @click="updateBtn()" när button klickas på körs metoden updateBtn() som kör fetchAPOD-->
 
       <input type="date" id="dateInput" v-model="selectedDate" placeholder="Pick a date" aria-label="Enter a date ">
       <button class="button" type="button" @click="updateBtn()"> Update </button>
     </form>
     <!-- Titel och datum visas här -->
     <h1>{{ title }}</h1>
-    <p> {{ selectedDate }}</p>
+    <!-- <p> {{ selectedDate }}</p> VISA DATUM -->
 
     <!-- Bilden/videon visas här. v-bind används genom ":" innan "src" -->
     <div v-if="isVideo">
@@ -40,7 +40,8 @@ this.copyright = data.copyright; // Ta bort fallback-strängen här-->
 export default {
   data() {
     return {
-      selectedDate: new Date().toISOString().split('T')[0],
+      selectedDate: new Date().toISOString().split('T')[0], //toISOtring koncerterar datum till sträng i formatet "YYYY-MM-DDTHH:mm:ss.sssZ"
+      // "date" innehåller datum och tid, så split T gör så att tiden separeras. och [0] gör att datumet är array0 och tid array1
       date: "",
       title: "",
       imageUrl: "",
@@ -74,7 +75,7 @@ const data = await response.json()
       console.error("Fetch error:", error);
   }
 },
-updateBtn() {
+updateBtn() { // när updateBtn klickas, kör fetchAPOD
   this.fetchAPOD();
 }}};
 
@@ -82,8 +83,8 @@ updateBtn() {
 <style scoped>
 /* APOD bilden */
 .apod-image {
-  max-width: 100%; 
-  height: auto;      /* behåller bildens proportioner */
+  max-width: 90%; 
+  height: auto;    /* behåller bildens proportioner */
   border-radius: 8px; /* Runda hörn */
   margin: 20px 0;    /* Avstånd höger vänster */
 }
